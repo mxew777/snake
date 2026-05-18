@@ -1,6 +1,6 @@
 [app]
-title = Snake Game
-package.name = snakegame
+title = Snake
+package.name = snake
 package.domain = org.snakegame
 source.dir = .
 source.include_exts = py
