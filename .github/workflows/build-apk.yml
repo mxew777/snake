@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +18,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -28,28 +26,27 @@ jobs:
             git zip unzip autoconf libtool pkg-config \
             libffi-dev libssl-dev libbz2-dev \
             zlib1g-dev libncurses5-dev libsqlite3-dev \
-            ccache
+            build-essential ccache \
+            libltdl-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev
 
-      - name: Install Buildozer and Cython
+      - name: Install Buildozer
         run: |
           pip3 install --upgrade pip
-          pip3 install buildozer cython
+          pip3 install buildozer==1.5.0 cython==0.29.33
+
+      - name: Clean old build
+        run: |
+          buildozer android clean
 
       - name: Build APK
         run: |
-          buildozer android debug 2>&1
-
-      - name: Find APK
-        run: |
-          echo "=== Searching for APK ==="
-          find . -name "*.apk" 2>/dev/null
-          echo "=== bin directory ==="
-          ls -la bin/ 2>/dev/null || echo "no bin folder"
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SnakeGame-APK
-          path: "**/*.apk"
+          path: bin/*.apk
           if-no-files-found: error
-          retention-days: 30
