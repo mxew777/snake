@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
@@ -35,11 +37,19 @@ jobs:
 
       - name: Build APK
         run: |
-          buildozer android debug 2>&1 | tail -50
+          buildozer android debug 2>&1
+
+      - name: Find APK
+        run: |
+          echo "=== Searching for APK ==="
+          find . -name "*.apk" 2>/dev/null
+          echo "=== bin directory ==="
+          ls -la bin/ 2>/dev/null || echo "no bin folder"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SnakeGame-APK
-          path: bin/*.apk
+          path: "**/*.apk"
+          if-no-files-found: error
           retention-days: 30
