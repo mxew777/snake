@@ -75,8 +75,17 @@ jobs:
 
       - name: Build APK
         run: |
-          buildozer android debug > build.log 2>&1 || true
-          tail -200 build.log
+          set +e
+          buildozer android debug > build.log 2>&1
+          BUILD_EXIT=$?
+
+          echo "========== LAST 300 LINES =========="
+          tail -300 build.log
+
+          echo "========== ERRORS =========="
+          grep -iE "error|failed|exception|traceback" build.log | tail -100 || true
+
+          exit $BUILD_EXIT
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
