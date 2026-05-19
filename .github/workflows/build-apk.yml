@@ -34,7 +34,6 @@ jobs:
           pip3 install buildozer cython
 
       - name: Build APK
-        working-directory: snake
         run: |
           buildozer android debug 2>&1 | tail -50
 
