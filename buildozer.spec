@@ -8,7 +8,7 @@ source.include_exts = py,png,jpg,jpeg,ttf,wav,mp3
 
 version = 1.0
 
-requirements = python3,pygame,arabic-reshaper,python-bidi
+requirements = python3,pygame
 
 orientation = portrait
 fullscreen = 1
