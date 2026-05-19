@@ -51,28 +51,33 @@ jobs:
             libgl1-mesa-dev \
             libgles2-mesa-dev
 
-      - name: Increase swap memory
-        run: |
-          sudo swapoff -a || true
-          sudo rm -f /swapfile || true
-
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-
-          free -h
-
       - name: Install Python packages
         run: |
           python3 -m pip install --upgrade pip
           pip3 install cython==0.29.33
           pip3 install buildozer==1.5.0
 
-      - name: Clean previous builds
+      - name: Build APK
         run: |
-          buildozer android clean
+          set +e
+          buildozer android debug > build.log 2>&1
+          BUILD_EXIT=$?
 
+          echo "========== LAST 300 LINES =========="
+          tail -300 build.log
+
+          echo "========== ERRORS =========="
+          grep -iE "error|failed|exception|traceback" build.log | tail -100 || true
+
+          exit $BUILD_EXIT
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnakeGame-APK
+          path: bin/*.apk
+          if-no-files-found: error
+          retention-days: 30
       - name: Build APK
         run: |
           set +e
