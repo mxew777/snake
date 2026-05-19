@@ -2,16 +2,23 @@
 title = Snake
 package.name = snake
 package.domain = org.snakegame
+
 source.dir = .
-source.include_exts = py
+source.include_exts = py,png,jpg,jpeg,ttf,wav,mp3
+
 version = 1.0
+
 requirements = python3,pygame,arabic-reshaper,python-bidi
+
 orientation = portrait
 fullscreen = 1
+
 android.permissions = VIBRATE
+
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
+
 android.accept_sdk_license = True
 android.archs = arm64-v8a
 
