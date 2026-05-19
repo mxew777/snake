@@ -2,10 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
-      - master
-
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -13,8 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -25,77 +21,32 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-
           sudo apt-get install -y \
-            python3-pip \
-            python3-setuptools \
-            python3-wheel \
-            build-essential \
-            git \
-            zip \
-            unzip \
-            openjdk-17-jdk \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            ccache \
-            libffi-dev \
-            libssl-dev \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            libtinfo5 \
-            cmake \
-            libltdl-dev \
-            libgl1-mesa-dev \
-            libgles2-mesa-dev
+            python3-pip python3-setuptools python3-wheel \
+            git zip unzip autoconf libtool pkg-config \
+            libffi-dev libssl-dev libbz2-dev \
+            zlib1g-dev libncurses5-dev libsqlite3-dev \
+            ccache
 
-      - name: Install Python packages
+      - name: Install Buildozer and Cython
         run: |
-          python3 -m pip install --upgrade pip
-          pip3 install cython==0.29.33
-          pip3 install buildozer==1.5.0
+          pip3 install --upgrade pip
+          pip3 install buildozer cython
 
       - name: Build APK
+        working-directory: snake
         run: |
-          set +e
-          buildozer android debug > build.log 2>&1
-          BUILD_EXIT=$?
+          buildozer android debug 2>&1 | tail -50
 
-          echo "========== LAST 300 LINES =========="
-          tail -300 build.log
-
-          echo "========== ERRORS =========="
-          grep -iE "error|failed|exception|traceback" build.log | tail -100 || true
-
-          exit $BUILD_EXIT
+      - name: Find APK
+        run: |
+          echo "Searching for APK..."
+          find . -name "*.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SnakeGame-APK
-          path: bin/*.apk
-          if-no-files-found: error
-          retention-days: 30
-      - name: Build APK
-        run: |
-          set +e
-          buildozer android debug > build.log 2>&1
-          BUILD_EXIT=$?
-
-          echo "========== LAST 300 LINES =========="
-          tail -300 build.log
-
-          echo "========== ERRORS =========="
-          grep -iE "error|failed|exception|traceback" build.log | tail -100 || true
-
-          exit $BUILD_EXIT
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: SnakeGame-APK
-          path: bin/*.apk
+          path: "**/*.apk"
           if-no-files-found: error
           retention-days: 30
