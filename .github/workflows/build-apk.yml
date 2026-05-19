@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build APK
 
 on:
   push:
@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -19,17 +18,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install dependencies
+      - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            python3-pip python3-setuptools python3-wheel \
-            git zip unzip autoconf libtool pkg-config \
-            libffi-dev libssl-dev zlib1g-dev \
-            ccache
-
-      - name: Install Buildozer
-        run: |
+          sudo apt-get install -y python3-pip git zip unzip
           pip3 install --upgrade pip
           pip3 install buildozer cython
 
@@ -37,13 +29,11 @@ jobs:
         run: |
           buildozer android debug
 
-      - name: Show APK location
-        run: |
-          find . -name "*.apk"
+      - name: Find APK
+        run: find . -name "*.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SnakeGame-APK
+          name: apk
           path: "**/*.apk"
-          if-no-files-found: error
