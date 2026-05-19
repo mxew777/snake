@@ -4,7 +4,7 @@ package.name = snake
 package.domain = org.snakegame
 
 source.dir = .
-source.include_exts = py,png,jpg,jpeg,ttf,wav,mp3
+source.include_exts = py
 
 version = 1.0
 
@@ -14,7 +14,6 @@ orientation = portrait
 fullscreen = 1
 
 android.permissions = VIBRATE
-
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
